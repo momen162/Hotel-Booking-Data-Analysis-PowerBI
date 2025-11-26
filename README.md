@@ -37,10 +37,47 @@ The hotel management team is facing two critical issues:
 * **Data Modeling:** Established a Star Schema (if applicable) or optimized a flat-file structure for performance.
 
 ### 2. DAX Calculations (Key Measures)
-Advanced DAX was used to create dynamic KPIs.
-* **Revenue Loss:** `SUM('Data'[Revenue Loss])` - *To quantify the financial impact of cancellations.*
-* **Cancellation Rate:** `DIVIDE([Cancelled Bookings], [Total Bookings])` - *To standardize risk across different volume periods.*
-* **ADR (Average Daily Rate):** `AVERAGE('Data'[Avg Daily Rate])` - *To monitor pricing power.*
+The following DAX measures were created to quantify performance and risk:
+
+**A. Booking Volume Metrics**
+* **Total Bookings:** Calculated the total count of distinct booking IDs.
+    ```dax
+    Total Bookings = COUNT('Data'[Booking ID])
+    ```
+* **Cancelled Bookings:** Isolated bookings where the status was flagged as cancelled (1).
+    ```dax
+    Cancelled Bookings = CALCULATE(COUNT('Data'[Booking ID]), 'Data'[Cancelled (0/1)] = 1)
+    ```
+* **Cancellation Rate (%):** The ratio of cancelled bookings to total bookings.
+    ```dax
+    Cancellation Rate = DIVIDE([Cancelled Bookings], [Total Bookings], 0)
+    ```
+
+**B. Revenue & Financial Metrics**
+* **Total Revenue:** Aggregated realized revenue from successful stays.
+    ```dax
+    Total Revenue = SUM('Data'[Revenue])
+    ```
+* **Total Revenue Loss:** calculated the potential revenue lost due to cancellations.
+    ```dax
+    Total Revenue Loss = SUM('Data'[Revenue Loss])
+    ```
+* **Average Daily Rate (ADR):** The average price paid per room per day.
+    ```dax
+    Avg Daily Rate (ADR) = AVERAGE('Data'[Avg Daily Rate])
+    ```
+
+**C. Customer Behavior (Calculated Column)**
+* **Booking Window:** Created a calculated column to segment customers by Lead Time (how far in advance they booked).
+    ```dax
+    Booking Window = SWITCH(TRUE(),
+        'Data'[Lead Time] <= 7, "0-7 Days (Last Minute)",
+        'Data'[Lead Time] <= 30, "08-30 Days (Short Term)",
+        'Data'[Lead Time] <= 90, "31-90 Days (Medium Term)",
+        'Data'[Lead Time] <= 180, "91-180 Days (Long Term)",
+        "180+ Days (Early Bird)"
+    )
+    ```
 
 ### 3. Dashboard Design (UI/UX)
 * Implemented **Page Navigation** and **Slicers** (Date, Hotel, Country) for user-driven exploration.
