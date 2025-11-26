@@ -68,9 +68,9 @@ Advanced DAX was used to create dynamic KPIs.
 ## 📂 Project Structure
 ```text
 ├── Data/
-│   ├── Hotel Management Booking Data.csv  # Raw Dataset
+│   ├── Hotel Management Booking Data.xlsx  # Raw Dataset
 ├── PowerBI/
 │   ├── Hotel_Analysis.pbix                # Source File
 ├── Images/
-│   ├── dashboard_screenshot.png           # Preview Image
+│   ├── dashboard.png           # Preview Image
 └── README.md                              # Documentation
